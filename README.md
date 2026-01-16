@@ -39,7 +39,6 @@ In Nextcloud, install the **workflow_script** app and create a rule:
 - **Accent normalization**: `Ági` and `Agi` treated as same user
 - **Duplicate removal**: Same lat/lon/time = one point
 - **Full GPX structure**: Preserves elevation, satellites, speed, accuracy, battery, user agent
-- **Year 2000 bug fix**: Skips points with obviously wrong timestamps
 
 ## Requirements
 
