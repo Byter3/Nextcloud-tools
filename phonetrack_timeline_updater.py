@@ -279,6 +279,12 @@ def main():
     
     args = parser.parse_args()
     
+    # Strip any surrounding quotes from paths (workflow_script may add them)
+    file_str = str(args.file).strip("'\"")
+    path_str = args.path.strip("'\"")
+    args.file = Path(file_str)
+    args.path = path_str
+    
     logger.info(f"=== PhoneTrack Timeline Updater ===")
     logger.info(f"New file: {args.file}")
     logger.info(f"NC path: {args.path}")
