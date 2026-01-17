@@ -24,7 +24,7 @@ Go to **Admin Settings** → **Flow** → **External scripts**
 
 Create a new rule:
 - **When**: File created
-- **and**: File name matches `*_daily_*.gpx`
+- **and**: File name matches `/_daily_\d{4}-\d{2}-\d{2}_.*\.gpx$/i`
 - **Run script**:
 
 ```
