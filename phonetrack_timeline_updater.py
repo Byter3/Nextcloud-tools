@@ -16,7 +16,7 @@ Arguments:
 """
 
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import unicodedata
 import argparse
@@ -120,7 +120,7 @@ def write_gpx(points: list[tuple[datetime, ET.Element]],
               session_name: str,
               device_name: str) -> None:
     """Write points to a GPX file with full PhoneTrack structure."""
-    export_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+    export_time = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     
     lines = [
         '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>',
