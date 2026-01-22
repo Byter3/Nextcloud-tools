@@ -25,6 +25,7 @@ import copy
 import sys
 import re
 import os
+import subprocess
 
 # Configure logging
 logging.basicConfig(
@@ -245,6 +246,18 @@ def update_timeline(new_file: Path, nc_path: str, data_dir: Path) -> bool:
     # Write timeline
     write_gpx(unique, timeline_path, session_name, device_name)
     logger.info(f"Timeline updated: {timeline_path}")
+    
+    # Trigger Nextcloud to rescan the file so it appears in the UI
+    try:
+        timeline_nc_path = f"/{nc_user}/files/PhoneTrack_export/{TIMELINES_SUBDIR}"
+        scan_cmd = ['php', '/var/www/html/occ', 'files:scan', nc_user, '--path', timeline_nc_path]
+        result = subprocess.run(scan_cmd, capture_output=True, text=True, timeout=60)
+        if result.returncode == 0:
+            logger.info(f"Nextcloud scan completed for {timeline_nc_path}")
+        else:
+            logger.warning(f"Nextcloud scan returned code {result.returncode}: {result.stderr}")
+    except Exception as e:
+        logger.warning(f"Failed to trigger Nextcloud scan: {e}")
     
     return True
 
