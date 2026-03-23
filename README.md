@@ -59,7 +59,7 @@ python3 phonetrack_timeline_updater.py --process-date 2026-03-21 --user YOUR_NC_
 ## Features
 
 - **Batch date processing**: `--process-date` finds and processes all exports for a given date
-- **Accent normalization**: `Ági` and `Agi` treated as same device
+- **Accent normalization**: Accented characters are normalized (e.g., `é` → `e`) for consistent filenames
 - **Duplicate removal**: Same lat/lon/time = one point
 - **Full GPX structure**: Preserves elevation, satellites, speed, accuracy, battery, user agent
 - **Auto-redeploy**: Cron script re-copies the updater if lost after container updates
