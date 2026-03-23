@@ -24,10 +24,11 @@ cd Nextcloud-tools
 # 2. Deploy script to container
 sudo docker cp phonetrack_timeline_updater.py nextcloud-aio-nextcloud:/opt/
 
-# 3. Set up daily cron (runs at 23:00 local / 22:00 UTC)
+# 3. Edit cron_phonetrack.sh to set your paths and username
+# 4. Set up daily cron
 chmod +x cron_phonetrack.sh
 sudo crontab -e
-# Add: 0 22 * * * /home/ag/Nextcloud-tools/cron_phonetrack.sh >> /home/ag/phonetrack_cron.log 2>&1
+# Add: 0 22 * * * /path/to/cron_phonetrack.sh >> /path/to/phonetrack_cron.log 2>&1
 ```
 
 See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
@@ -46,13 +47,13 @@ See [SETUP_GUIDE.md](SETUP_GUIDE.md) for detailed instructions.
 
 ```bash
 # Process all exports for a specific date
-python3 phonetrack_timeline_updater.py --process-date 2026-03-21
+python3 phonetrack_timeline_updater.py --process-date 2026-03-21 --user YOUR_NC_USER
 
 # Process a single file
 python3 phonetrack_timeline_updater.py --file "/path/to/daily.gpx" --path "user/files/PhoneTrack_export/daily.gpx"
 
 # Dry run (no changes)
-python3 phonetrack_timeline_updater.py --process-date 2026-03-21 --dry-run
+python3 phonetrack_timeline_updater.py --process-date 2026-03-21 --user YOUR_NC_USER --dry-run
 ```
 
 ## Features

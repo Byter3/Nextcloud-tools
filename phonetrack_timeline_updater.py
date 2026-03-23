@@ -286,8 +286,7 @@ def main():
     parser.add_argument(
         '--user',
         type=str,
-        default='AG',
-        help='Nextcloud username (default: AG)'
+        help='Nextcloud username (required with --process-date)'
     )
     parser.add_argument(
         '--data-dir', '-d',
@@ -305,6 +304,8 @@ def main():
     
     # Mode 1: Process all daily exports for a given date
     if args.process_date:
+        if not args.user:
+            parser.error('--user is required when using --process-date')
         export_dir = args.data_dir / args.user / 'files' / 'PhoneTrack_export'
         pattern = str(export_dir / f'*_daily_{args.process_date}_*.gpx')
         files = sorted(glob.glob(pattern))
