@@ -22,6 +22,7 @@ import unicodedata
 import argparse
 import logging
 import copy
+import glob
 import sys
 import re
 import os
@@ -269,14 +270,24 @@ def main():
     parser.add_argument(
         '--file', '-f',
         type=Path,
-        required=True,
         help='Path to the new GPX file (workflow_script %%f placeholder)'
     )
     parser.add_argument(
         '--path', '-p',
         type=str,
-        required=True,
         help='Nextcloud-relative path (workflow_script %%n placeholder)'
+    )
+    parser.add_argument(
+        '--process-date',
+        type=str,
+        help='Process all daily exports for this date (YYYY-MM-DD). '
+             'Finds files matching *_daily_DATE_*.gpx in the export directory.'
+    )
+    parser.add_argument(
+        '--user',
+        type=str,
+        default='AG',
+        help='Nextcloud username (default: AG)'
     )
     parser.add_argument(
         '--data-dir', '-d',
@@ -291,6 +302,40 @@ def main():
     )
     
     args = parser.parse_args()
+    
+    # Mode 1: Process all daily exports for a given date
+    if args.process_date:
+        export_dir = args.data_dir / args.user / 'files' / 'PhoneTrack_export'
+        pattern = str(export_dir / f'*_daily_{args.process_date}_*.gpx')
+        files = sorted(glob.glob(pattern))
+        
+        if not files:
+            logger.info(f"No daily exports found for date {args.process_date}")
+            logger.info(f"Searched: {pattern}")
+            sys.exit(0)
+        
+        logger.info(f"=== Processing {len(files)} files for {args.process_date} ===")
+        all_ok = True
+        for filepath in files:
+            filepath = Path(filepath)
+            filename = filepath.name
+            nc_path = f"{args.user}/files/PhoneTrack_export/{filename}"
+            logger.info(f"--- Processing: {filename} ---")
+            if args.dry_run:
+                parsed = parse_nextcloud_path(nc_path)
+                if parsed:
+                    _, session_name, device_name, date_str = parsed
+                    logger.info(f"Would update timeline for: {session_name}_{device_name}")
+            else:
+                success = update_timeline(filepath, nc_path, args.data_dir)
+                if not success:
+                    all_ok = False
+        
+        sys.exit(0 if all_ok else 1)
+    
+    # Mode 2: Process a single file (original mode)
+    if not args.file or not args.path:
+        parser.error('Either --process-date or both --file and --path are required')
     
     # Strip any surrounding quotes from paths (workflow_script may add them)
     file_str = str(args.file).strip("'\"")
